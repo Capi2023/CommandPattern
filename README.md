@@ -1,3 +1,6 @@
+# Exposicion sobre el Patron de Comando
+## Emiliano Garcia Cordero - 20211779
+
 # Command Pattern
 
 Command es un patrón de diseño de comportamiento que convierte una solicitud en un objeto independiente que contiene toda la información sobre la solicitud. Esta transformación te permite parametrizar los métodos con diferentes solicitudes, retrasar o poner en cola la ejecución de una solicitud y soportar operaciones que no se pueden realizar.
@@ -15,6 +18,7 @@ El pedido en papel hace la función de un comando. Permanece en una cola hasta q
 El patrón Command ayuda a rastrear el historial de operaciones ejecutadas y hace posible revertir una operación si es necesario.
 ![pseudocodigo](https://refactoring.guru/images/patterns/diagrams/command/example.png?id=1f42c8395fe54d0e409026b91881e2a0)
 
+# Codigo ejemplo
 ```c#
 using System;
 
@@ -143,7 +147,7 @@ namespace RefactoringGuru.DesignPatterns.Command.Conceptual
 }
 ```
 
-Y la salida seria la siguente
+Y la salida seria la siguente:
 
 ```
 Invoker: Does anybody want something done before I begin?
