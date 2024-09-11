@@ -19,144 +19,160 @@ El patrón Command ayuda a rastrear el historial de operaciones ejecutadas y hac
 ![pseudocodigo](https://refactoring.guru/images/patterns/diagrams/command/example.png?id=1f42c8395fe54d0e409026b91881e2a0)
 
 # Codigo ejemplo
+
 ```c#
 using System;
 
-namespace RefactoringGuru.DesignPatterns.Command.Conceptual
+// Interfaz del comando.
+public interface ICommand
 {
-    // The Command interface declares a method for executing a command.
-    public interface ICommand
+    void Execute();
+}
+
+// Comando para registrar una venta simple.
+class RegisterSaleCommand : ICommand
+{
+    private string _product;
+    private int _quantity;
+
+    public RegisterSaleCommand(string product, int quantity)
     {
-        void Execute();
+        this._product = product;
+        this._quantity = quantity;
     }
 
-    // Some commands can implement simple operations on their own.
-    class SimpleCommand : ICommand
+    public void Execute()
     {
-        private string _payload = string.Empty;
+        Console.WriteLine($"Registrando venta: Producto: {_product}, Cantidad: {_quantity}");
+    }
+}
 
-        public SimpleCommand(string payload)
-        {
-            this._payload = payload;
-        }
+// Comando para aplicar un descuento a la venta.
+class ApplyDiscountCommand : ICommand
+{
+    private double _discountPercentage;
 
-        public void Execute()
-        {
-            Console.WriteLine($"SimpleCommand: See, I can do simple things like printing ({this._payload})");
-        }
+    public ApplyDiscountCommand(double discountPercentage)
+    {
+        this._discountPercentage = discountPercentage;
     }
 
-    // However, some commands can delegate more complex operations to other
-    // objects, called "receivers."
-    class ComplexCommand : ICommand
+    public void Execute()
     {
-        private Receiver _receiver;
+        Console.WriteLine($"Aplicando descuento del {_discountPercentage}% a la venta.");
+    }
+}
 
-        // Context data, required for launching the receiver's methods.
-        private string _a;
+// Comando complejo para actualizar el inventario.
+class UpdateInventoryCommand : ICommand
+{
+    private InventoryManager _inventoryManager;
+    private string _product;
+    private int _quantity;
 
-        private string _b;
-
-        // Complex commands can accept one or several receiver objects along
-        // with any context data via the constructor.
-        public ComplexCommand(Receiver receiver, string a, string b)
-        {
-            this._receiver = receiver;
-            this._a = a;
-            this._b = b;
-        }
-
-        // Commands can delegate to any methods of a receiver.
-        public void Execute()
-        {
-            Console.WriteLine("ComplexCommand: Complex stuff should be done by a receiver object.");
-            this._receiver.DoSomething(this._a);
-            this._receiver.DoSomethingElse(this._b);
-        }
+    public UpdateInventoryCommand(InventoryManager inventoryManager, string product, int quantity)
+    {
+        this._inventoryManager = inventoryManager;
+        this._product = product;
+        this._quantity = quantity;
     }
 
-    // The Receiver classes contain some important business logic. They know how
-    // to perform all kinds of operations, associated with carrying out a
-    // request. In fact, any class may serve as a Receiver.
-    class Receiver
+    public void Execute()
     {
-        public void DoSomething(string a)
-        {
-            Console.WriteLine($"Receiver: Working on ({a}.)");
-        }
+        Console.WriteLine("Actualizando inventario...");
+        _inventoryManager.RemoveProduct(_product, _quantity);
+    }
+}
 
-        public void DoSomethingElse(string b)
-        {
-            Console.WriteLine($"Receiver: Also working on ({b}.)");
-        }
+// Receptor que maneja el inventario.
+class InventoryManager
+{
+    public void RemoveProduct(string product, int quantity)
+    {
+        Console.WriteLine($"Inventario: Producto '{product}' reducido en {quantity} unidades.");
     }
 
-    // The Invoker is associated with one or several commands. It sends a
-    // request to the command.
-    class Invoker
+    public void AddProduct(string product, int quantity)
     {
-        private ICommand _onStart;
+        Console.WriteLine($"Inventario: Producto '{product}' incrementado en {quantity} unidades.");
+    }
+}
 
-        private ICommand _onFinish;
+// El Invocador que manejará los comandos.
+class PointOfSaleInvoker
+{
+    private ICommand _onSale;
+    private ICommand _onDiscount;
+    private ICommand _onInventoryUpdate;
 
-        // Initialize commands.
-        public void SetOnStart(ICommand command)
-        {
-            this._onStart = command;
-        }
-
-        public void SetOnFinish(ICommand command)
-        {
-            this._onFinish = command;
-        }
-
-        // The Invoker does not depend on concrete command or receiver classes.
-        // The Invoker passes a request to a receiver indirectly, by executing a
-        // command.
-        public void DoSomethingImportant()
-        {
-            Console.WriteLine("Invoker: Does anybody want something done before I begin?");
-            if (this._onStart is ICommand)
-            {
-                this._onStart.Execute();
-            }
-            
-            Console.WriteLine("Invoker: ...doing something really important...");
-            
-            Console.WriteLine("Invoker: Does anybody want something done after I finish?");
-            if (this._onFinish is ICommand)
-            {
-                this._onFinish.Execute();
-            }
-        }
+    public void SetSaleCommand(ICommand command)
+    {
+        this._onSale = command;
     }
 
-    class Program
+    public void SetDiscountCommand(ICommand command)
     {
-        static void Main(string[] args)
-        {
-            // The client code can parameterize an invoker with any commands.
-            Invoker invoker = new Invoker();
-            invoker.SetOnStart(new SimpleCommand("Say Hi!"));
-            Receiver receiver = new Receiver();
-            invoker.SetOnFinish(new ComplexCommand(receiver, "Send email", "Save report"));
+        this._onDiscount = command;
+    }
 
-            invoker.DoSomethingImportant();
+    public void SetInventoryUpdateCommand(ICommand command)
+    {
+        this._onInventoryUpdate = command;
+    }
+
+    public void ProcessSale()
+    {
+        Console.WriteLine("Iniciando proceso de venta...");
+
+        if (this._onSale is ICommand)
+        {
+            this._onSale.Execute();
         }
+
+        if (this._onDiscount is ICommand)
+        {
+            this._onDiscount.Execute();
+        }
+
+        if (this._onInventoryUpdate is ICommand)
+        {
+            this._onInventoryUpdate.Execute();
+        }
+
+        Console.WriteLine("Proceso de venta finalizado.");
+    }
+}
+
+// Cliente
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Crear el invocador (punto de venta)
+        PointOfSaleInvoker pos = new PointOfSaleInvoker();
+
+        // Configurar los comandos
+        pos.SetSaleCommand(new RegisterSaleCommand("Laptop", 1));
+        pos.SetDiscountCommand(new ApplyDiscountCommand(10)); // 10% de descuento
+        InventoryManager inventoryManager = new InventoryManager();
+        pos.SetInventoryUpdateCommand(new UpdateInventoryCommand(inventoryManager, "Laptop", 1));
+
+        // Ejecutar el proceso de venta
+        pos.ProcessSale();
     }
 }
 ```
 
+
 Y la salida seria la siguente:
 
 <pre>
-Invoker: Does anybody want something done before I begin?
-SimpleCommand: See, I can do simple things like printing (Say Hi!)
-Invoker: ...doing something really important...
-Invoker: Does anybody want something done after I finish?
-ComplexCommand: Complex stuff should be done by a receiver object.
-Receiver: Working on (Send email.)
-Receiver: Also working on (Save report.)
+Iniciando proceso de venta...
+Registrando venta: Producto: Laptop, Cantidad: 1
+Aplicando descuento del 10% a la venta.
+Actualizando inventario...
+Inventario: Producto 'Laptop' reducido en 1 unidades.
+Proceso de venta finalizado.
 </pre>
 
 
