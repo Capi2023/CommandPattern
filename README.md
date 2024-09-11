@@ -43,7 +43,7 @@ class RegisterSaleCommand : ICommand
 
     public void Execute()
     {
-        Console.WriteLine($"Registrando venta: Producto: {_product}, Cantidad: {_quantity}");
+        Console.WriteLine("Registrando venta: Producto: " + _product + ", Cantidad: " + _quantity);
     }
 }
 
@@ -59,7 +59,7 @@ class ApplyDiscountCommand : ICommand
 
     public void Execute()
     {
-        Console.WriteLine($"Aplicando descuento del {_discountPercentage}% a la venta.");
+        Console.WriteLine("Aplicando descuento del " + _discountPercentage + "% a la venta.");
     }
 }
 
@@ -89,12 +89,12 @@ class InventoryManager
 {
     public void RemoveProduct(string product, int quantity)
     {
-        Console.WriteLine($"Inventario: Producto '{product}' reducido en {quantity} unidades.");
+        Console.WriteLine("Inventario: Producto '" + product + "' reducido en " + quantity + " unidades.");
     }
 
     public void AddProduct(string product, int quantity)
     {
-        Console.WriteLine($"Inventario: Producto '{product}' incrementado en {quantity} unidades.");
+        Console.WriteLine("Inventario: Producto '" + product + "' incrementado en " + quantity + " unidades.");
     }
 }
 
@@ -144,9 +144,9 @@ class PointOfSaleInvoker
 }
 
 // Cliente
-class Program
+public class Program
 {
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
         // Crear el invocador (punto de venta)
         PointOfSaleInvoker pos = new PointOfSaleInvoker();
