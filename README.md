@@ -175,6 +175,22 @@ Inventario: Producto 'Laptop' reducido en 1 unidades.
 Proceso de venta finalizado.
 </pre>
 
+# Explicacion
+1. Comando para registrar una venta: Este comando simula el registro de una venta de un producto, como una "Laptop" con una cantidad de 1.
+
+
+2. Comando para aplicar un descuento: Este comando aplica un descuento del 10% a la venta.
+
+
+3. Comando para actualizar el inventario: Después de realizar la venta, se actualiza el inventario restando la cantidad vendida.
+
+
+4. Receptor (InventoryManager): El InventoryManager gestiona el inventario, reduciendo o aumentando productos según las acciones ejecutadas.
+
+
+5. Invoker (PointOfSaleInvoker): Es el encargado de ejecutar los comandos en el momento adecuado, en este caso, durante el proceso de venta.
+
+
 
 # Referencias
 
